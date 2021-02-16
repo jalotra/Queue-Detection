@@ -20,4 +20,5 @@ Ques : Why are there different versions of the same paper ?
 2. V2 : Somrthing  Here
 3. V3 : Something Here 
 4. V4 : https://arxiv.org/pdf/1506.02640v4.pdf
+5. https://blog.paperspace.com/how-to-implement-a-yolo-object-detector-in-pytorch/
 
