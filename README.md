@@ -1,8 +1,11 @@
 # Queue-Detection
 
 ## Current Tasks 
-1. To use the YOLO Algorithm to detect all the bounding boxes that are persons. 
-2. Maybe Fine Tune the Model to only output bounding boxes around humans. Something like this : https://www.codeproject.com/Articles/5283660/AI-Queue-Length-Detection-Counting-the-Number-of-P
+Yolo from here : https://github.com/ultralytics/yolov5
+1. To use the YOLO Algorithm to detect all the bounding boxes that are persons.
+2. Reading the Source Code of Darknet, learning about Yolo Layers and the implementation in Pytorch.  
+3. Maybe Fine Tune the Model to only output bounding boxes around humans. Something like this : https://www.codeproject.com/Articles/5283660/AI-Queue-Length-Detection-Counting-the-Number-of-P
+
 
 
 ## Setting Up the Development Arena 
@@ -12,7 +15,22 @@
 2. Next run "bash setup.sh" -> This will install all the related dependencies.
 2. In case of error, read the *sh files and figure it out yourself.
 
+## Average Timings on Still Images
+1. Yolov5s -
+``` 
+real	0m2.530s
+user	0m3.023s
+sys	    0m0.333s
+```
 
+2. Yolov5m - 
+3. Yolov5l - 
+4. Yolov5x - 
+5. Yolov5x + TTA - 
+
+## Datasets to Check On 
+1. Shanghai DataSet : https://www.kaggle.com/tthien/shanghaitech
+2. 
 
 
 ## Readings : 
