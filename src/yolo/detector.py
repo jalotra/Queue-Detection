@@ -1,5 +1,10 @@
+from typing import List
 import torch
 from PIL import Image
+from torch._C import double
+from math import sqrt
+
+from convex_hull import ConvexHull
 
 class Detector(object):
     def __init__(self):
@@ -32,8 +37,66 @@ class Detector(object):
         image = Image.open(img_name)
         return model(image)
 
+    def find_distance(self, points : List, m : double, c : double) -> double :
+        assert(type(points) == 'Point')
+        dist_sum = 0
+        for p in points:
+            dist_sum += abs(p.y - m * p.x - c) / (sqrt(1 + m * m))
         
+        return dist_sum
+    
+    def predict_queue(self, detections_object, show = False):
+        '''
+        @param [detections_object] = Object of the class models.common.Detections.
+        '''
+        if detections_object is None:
+            raise Exception(f"Points can't be found. Points are {detections_object} ")
+        
+        points = []
 
+        for *box, _ , _ in detections_object.pred:
+            for x in box:
+                x = x.cpu().detach().numpy()
+                p1, p2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
+                # Appending the mid point of rectangle to points
+                mid_x = (p1[0] + p2[0]) // 2
+                mid_y = (p1[1] + p2[1]) // 2 
+                if show:
+                    print(f"Mid_X : {mid_x}, Mid_Y : {mid_y}")
+                points.append([mid_x, mid_y])
+
+        
+        # Finding the convex hull of these points
+        convex_hull = ConvexHull(points).find_convex_hull()
+        for idx1 in range(len(convex_hull)):
+            for idx2 in range(idx1 + 1, len(convex_hull)):
+                # Slope : Some Big value to start with
+                m = 1e+9, c = 0
+                if(convex_hull[idx2].x - convex_hull[idx1].x != 0):
+                    m = (convex_hull[idx2].y - convex_hull[idx1]. y) / (convex_hull[idx2].x - convex_hull[idx1].x)
+                c = -convex_hull[idx1].x * m + convex_hull[idx1].y
+
+                best_m, best_c, best_dist = -1, -1, 1e+18 
+                if(self.find_distance(points) < best_dist):
+                    best_dist = self.find_distance(points)
+                    best_m = m
+                    best_c = c
+
+        # Now find the best points possible
+        # Using the slope and intercept
+        thresold = 0.5
+        max_dist = 0
+        for p in points:
+            dist_here = abs(p.y - m * p.x - best_c) / (sqrt(1 + best_m * best_m))
+            max_dist = max(max_dist, dist_here)
+
+        resultant_points = []
+        for p in points:
+            dist_here = abs(p.y - m * p.x - best_c) / (sqrt(1 + best_m * best_m))
+            if(dist_here <= thresold * max_dist):
+                resultant_points.append(p)
+        
+        return resultant_points
         
 
 
