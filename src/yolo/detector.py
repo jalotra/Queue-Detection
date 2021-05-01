@@ -1,10 +1,9 @@
 from typing import List
 import torch
 from PIL import Image
-from torch._C import double
 from math import sqrt
 
-from convex_hull import ConvexHull
+from convex_hull import ConvexHull, Point
 
 class Detector(object):
     def __init__(self):
@@ -37,10 +36,10 @@ class Detector(object):
         image = Image.open(img_name)
         return model(image)
 
-    def find_distance(self, points : List, m : double, c : double) -> double :
-        assert(type(points) == 'Point')
+    def find_distance(self, hull_points : List, m : float, c : float) -> float :
+        assert(isinstance(hull_points[0], Point))
         dist_sum = 0
-        for p in points:
+        for p in hull_points:
             dist_sum += abs(p.y - m * p.x - c) / (sqrt(1 + m * m))
         
         return dist_sum
@@ -65,36 +64,37 @@ class Detector(object):
                     print(f"Mid_X : {mid_x}, Mid_Y : {mid_y}")
                 points.append([mid_x, mid_y])
 
-        
+        print(points)
         # Finding the convex hull of these points
         convex_hull = ConvexHull(points).find_convex_hull()
+        # print(f"Convex Hull : {convex_hull}")
         for idx1 in range(len(convex_hull)):
             for idx2 in range(idx1 + 1, len(convex_hull)):
                 # Slope : Some Big value to start with
-                m = 1e+9, c = 0
+                m, c = 1e+9, 0
                 if(convex_hull[idx2].x - convex_hull[idx1].x != 0):
                     m = (convex_hull[idx2].y - convex_hull[idx1]. y) / (convex_hull[idx2].x - convex_hull[idx1].x)
                 c = -convex_hull[idx1].x * m + convex_hull[idx1].y
 
                 best_m, best_c, best_dist = -1, -1, 1e+18 
-                if(self.find_distance(points) < best_dist):
-                    best_dist = self.find_distance(points)
+                if(self.find_distance(convex_hull, m, c) < best_dist):
+                    best_dist = self.find_distance(convex_hull, m, c)
                     best_m = m
                     best_c = c
 
         # Now find the best points possible
         # Using the slope and intercept
-        thresold = 0.5
+        thresold = 0.85
         max_dist = 0
-        for p in points:
+        for p in convex_hull:
             dist_here = abs(p.y - m * p.x - best_c) / (sqrt(1 + best_m * best_m))
             max_dist = max(max_dist, dist_here)
 
         resultant_points = []
-        for p in points:
+        for p in convex_hull:
             dist_here = abs(p.y - m * p.x - best_c) / (sqrt(1 + best_m * best_m))
             if(dist_here <= thresold * max_dist):
-                resultant_points.append(p)
+                resultant_points.append([p.x, p.y])
         
         return resultant_points
         

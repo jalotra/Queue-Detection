@@ -20,26 +20,27 @@ class ConvexHull():
         for x in points:
             assert(len(x) == 2)
             self.points.append(Point(x[0], x[1]))
-        print(self.points)
+        # print(self.points)
     def find_convex_hull(self):
         if(len(self.points) == 1):
             return 
         # Have to think how to do this
-        self.points = sorted(self.points, key = cmp())
+        self.points = sorted(self.points, key = lambda p : (p.x, p.y))
+        p1 = self.points[0]; p2 = self.points[-1]
 
-        p1 = self.points[0], p2 = self.points[-1]
         up, down = [], [] 
+        up.append(p1);down.append(p1)
 
         for i in range(1, len(self.points)):
-            if(i == len(self.points) - 1 or self.cw(p1, self.points[i], p2)):
-                while(len(up) >= 2 and not self.cw(up[len(up) - 2], up[len(up) - 1], self.points[i])):
+            if(i == len(self.points) - 1 or clockwise(p1, self.points[i], p2)):
+                while(len(up) >= 2 and not clockwise(up[len(up) - 2], up[len(up) - 1], self.points[i])):
                     up.pop()
-                up.push(self.points[i])
+                up.append(self.points[i])
 
-            if(i == len(self.points) - 1 or self.ccw(p1, self.points[i], p2)):
-                while(len(down) >= 2 and not self.cw(down[len(down) - 2], down[len(down) - 1], self.points[i])):
+            if(i == len(self.points) - 1 or counter_clockwise(p1, self.points[i], p2)):
+                while(len(down) >= 2 and not counter_clockwise(down[len(down) - 2], down[len(down) - 1], self.points[i])):
                     down.pop()
-                down.push(self.points[i])
+                down.append(self.points[i])
 
         self.points = []
         for a in up:

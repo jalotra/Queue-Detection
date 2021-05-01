@@ -3,6 +3,13 @@ from PIL import Image
 # from detector import Detector_Class
 from detector import Detector 
 from pprint import pprint
+from convex_hull import ConvexHull
+
+
+# def main():
+#     points = [[1, 2], [3, 4], [2, 3]]
+#     hull = ConvexHull(points)
+#     print(hull.find_convex_hull())
 
 def main():
     detectorModule = Detector()
@@ -15,7 +22,7 @@ def main():
     for image_name in images:
         filename = path + image_name
         people_predictions = detectorModule.predict_people(model, filename)
-        detectorModule.predict_queue(people_predictions)
-
+        q = detectorModule.predict_queue(people_predictions)
+        print(q)
 
 main()
