@@ -52,8 +52,8 @@ class Detector(object):
             raise Exception(f"Points can't be found. Points are {detections_object} ")
         
         points = []
-
         for *box, _ , _ in detections_object.pred:
+
             for x in box:
                 x = x.cpu().detach().numpy()
                 p1, p2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
@@ -65,37 +65,42 @@ class Detector(object):
                 points.append([mid_x, mid_y])
 
         print(points)
-        # Finding the convex hull of these points
-        convex_hull = ConvexHull(points).find_convex_hull()
         # print(f"Convex Hull : {convex_hull}")
-        for idx1 in range(len(convex_hull)):
-            for idx2 in range(idx1 + 1, len(convex_hull)):
-                # Slope : Some Big value to start with
-                m, c = 1e+9, 0
-                if(convex_hull[idx2].x - convex_hull[idx1].x != 0):
-                    m = (convex_hull[idx2].y - convex_hull[idx1]. y) / (convex_hull[idx2].x - convex_hull[idx1].x)
-                c = -convex_hull[idx1].x * m + convex_hull[idx1].y
+        if(len(points) >= 2):
+            # Finding the convex hull of these points
+            convex_hull = ConvexHull(points).find_convex_hull()
+            for idx1 in range(len(convex_hull)):
+                for idx2 in range(idx1 + 1, len(convex_hull)):
+                    # Slope : Some Big value to start with
+                    m, c = 1e+9, 0
+                    if(convex_hull[idx2].x - convex_hull[idx1].x != 0):
+                        m = (convex_hull[idx2].y - convex_hull[idx1]. y) / (convex_hull[idx2].x - convex_hull[idx1].x)
+                    c = -convex_hull[idx1].x * m + convex_hull[idx1].y
 
-                best_m, best_c, best_dist = -1, -1, 1e+18 
-                if(self.find_distance(convex_hull, m, c) < best_dist):
-                    best_dist = self.find_distance(convex_hull, m, c)
-                    best_m = m
-                    best_c = c
+                    best_m, best_c, best_dist = -1, -1, 1e+18 
+                    if(self.find_distance(convex_hull, m, c) < best_dist):
+                        best_dist = self.find_distance(convex_hull, m, c)
+                        best_m = m
+                        best_c = c
 
-        # Now find the best points possible
-        # Using the slope and intercept
-        thresold = 0.85
-        max_dist = 0
-        for p in convex_hull:
-            dist_here = abs(p.y - m * p.x - best_c) / (sqrt(1 + best_m * best_m))
-            max_dist = max(max_dist, dist_here)
+            # Now find the best points possible
+            # Using the slope and intercept
+            thresold = 0.90
+            max_dist = 0
+            for p in points:
+                dist_here = abs(p[1] - m * p[0] - best_c) / (sqrt(1 + best_m * best_m))
+                max_dist = max(max_dist, dist_here)
 
-        resultant_points = []
-        for p in convex_hull:
-            dist_here = abs(p.y - m * p.x - best_c) / (sqrt(1 + best_m * best_m))
-            if(dist_here <= thresold * max_dist):
-                resultant_points.append([p.x, p.y])
-        
+            resultant_points = []
+            for p in points:
+                dist_here = abs(p[1] - m * p[0] - best_c) / (sqrt(1 + best_m * best_m))
+                if(dist_here <= thresold * max_dist):
+                    resultant_points.append([p[0], p[1]])
+            print(f"Resultant Points : {resultant_points}")
+            return resultant_points
+        else:
+            print(f"Resultant Points : {points}")
+            return points
         return resultant_points
         
 
