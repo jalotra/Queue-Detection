@@ -37,10 +37,10 @@ class Detector(object):
         return model(image)
 
     def find_distance(self, hull_points : List, m : float, c : float) -> float :
-        assert(isinstance(hull_points[0], Point))
+        # assert(isinstance(hull_points[0], Point))
         dist_sum = 0
         for p in hull_points:
-            dist_sum += abs(p.y - m * p.x - c) / (sqrt(1 + m * m))
+            dist_sum += abs(p[1] - m * p[0] - c) / (sqrt(1 + m * m))
         
         return dist_sum
     
@@ -78,8 +78,8 @@ class Detector(object):
                     c = -convex_hull[idx1].x * m + convex_hull[idx1].y
 
                     best_m, best_c, best_dist = -1, -1, 1e+18 
-                    if(self.find_distance(convex_hull, m, c) < best_dist):
-                        best_dist = self.find_distance(convex_hull, m, c)
+                    if(self.find_distance(points, m, c) < best_dist):
+                        best_dist = self.find_distance(points, m, c)
                         best_m = m
                         best_c = c
 
@@ -88,16 +88,17 @@ class Detector(object):
             thresold = 0.90
             max_dist = 0
             for p in points:
-                dist_here = abs(p[1] - m * p[0] - best_c) / (sqrt(1 + best_m * best_m))
+                dist_here = abs(p[1] - best_m * p[0] - best_c) / (sqrt(1 + best_m * best_m))
                 max_dist = max(max_dist, dist_here)
-
+            print(f"Max Distance : {max_dist}")
             resultant_points = []
             for p in points:
-                dist_here = abs(p[1] - m * p[0] - best_c) / (sqrt(1 + best_m * best_m))
+                dist_here = abs(p[1] - best_m * p[0] - best_c) / (sqrt(1 + best_m * best_m))
+                print(f"Distance Here : {dist_here}")
                 if(dist_here <= thresold * max_dist):
                     resultant_points.append([p[0], p[1]])
-            print(f"Resultant Points : {resultant_points}")
             return resultant_points
+            print(f"Resultant Points : {resultant_points}")
         else:
             print(f"Resultant Points : {points}")
             return points

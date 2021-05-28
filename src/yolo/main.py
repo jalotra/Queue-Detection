@@ -1,31 +1,27 @@
 import torch
 from PIL import Image
-# from detector import Detector_Class
 from detector import Detector 
 from pprint import pprint
 from convex_hull import ConvexHull
 import glob
 import cv2
 
-
-# def main():
-#     points = [[1, 2], [3, 4], [2, 3]]
-#     hull = ConvexHull(points)
-#     print(hull.find_convex_hull())
-
 def main():
     detectorModule = Detector()
     model = detectorModule.load_model("yolov5x", pretrained = True)
+    # filename = '../data/images/People-in-queue-PTI.jpg'
+    # people_predictions = detectorModule.predict_people(model, filename)
+    # people_predictions.show()
 
     images = glob.glob("../data/images/*.jpg")
-    # print(images[0])
 
+    filename = '../data/images/People-in-queue-PTI.jpg'
     # Predict People
     for image_name in images:
         filename = image_name
         print(f"FILENAME : {filename}")
+        
         people_predictions = detectorModule.predict_people(model, filename)
-        # people_predictions.show()
         q = detectorModule.predict_queue(people_predictions)
         
         image = cv2.imread(image_name)
