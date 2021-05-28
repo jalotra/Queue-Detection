@@ -16,13 +16,7 @@ Yolo from here : https://github.com/ultralytics/yolov5
 2. In case of error, read the *sh files and figure it out yourself.
 
 ## Average Timings on Still Images
-1. Yolov5s -
-``` 
-real	0m2.530s
-user	0m3.023s
-sys	    0m0.333s
-```
-
+1. Yolov5s - 
 2. Yolov5m - 
 3. Yolov5l - 
 4. Yolov5x - 
@@ -41,3 +35,24 @@ Ques : Why are there different versions of the same paper ?
 4. V4 : https://arxiv.org/pdf/1506.02640v4.pdf
 5. https://blog.paperspace.com/how-to-implement-a-yolo-object-detector-in-pytorch/
 
+
+## Results : 
+Picture 1 : 
+
+![Indian Queue](/src/yolo/results/indian_bank_4_result.jpg)
+
+Picture 2 : 
+
+![Indian Queue](/src/yolo/results/indian_bank_3_result.jpg)
+
+Picture 3 : 
+
+![Indian Queue](/src/yolo/results/indian_bank_result.jpg)
+
+Picture 4 : 
+
+![Indian Queue](/src/yolo/results/indian_ban_2_result.jpg)
+
+Picture 5 :
+
+![Not Indian Queue](/src/yolo/results/american_bank_result.jpg)
