@@ -1,5 +1,17 @@
 # Queue-Detection
 
+## Objective and Approach: 
+1. To find a possible queue vector which is basically a line or (y = mx + c) using People Detection as a subroutine and then answer this question : "How many people are standing in the queue".
+2. Assumption Taken : "Whatever be the camera angle is the queue is always a planar surface in a 3D world".
+3. Finds the bounding boxes around people using Yolo. 
+4. Of all those bounding boxes the code tries to find the best params(m, c) such that maximum people lie on or some delta(eps) along this line. 
+5. Takes 90% of all the points to remove outliers.
+
+6. Finding params(m, c) is done by solving an optimisation problem that uses Convex-Hull as a subroutine.
+
+For more details refer the Presentation that I made : [Presentation](https://docs.google.com/presentation/d/1lLFk9pbesifM4sqvtADYO5XDE2w7pS4Lv2oO0Xv2wAs/edit?usp=sharing) 
+
+
 ## Current Tasks 
 Yolo from here : https://github.com/ultralytics/yolov5
 1. To use the YOLO Algorithm to detect all the bounding boxes that are persons.
